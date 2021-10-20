@@ -1,3 +1,4 @@
+require "byebug"
 def exp(b, n)
     return 1 if n == 0
     return b if n == 1
@@ -122,10 +123,48 @@ def subsets(array)
 end
 
 
-p subsets([]) # => [[]]
-p subsets([1]) # => [[], [1]]
-p subsets([1, 2]) # => [[], [1], [2], [1, 2]]
-p subsets([1, 2, 3])
-# => [[], [1], [2], [1, 2], [3], [1, 3], [2, 3], [1, 2, 3]]
+# p subsets([]) # => [[]]
+# p subsets([1]) # => [[], [1]]
+# p subsets([1, 2]) # => [[], [1], [2], [1, 2]]
+# p subsets([1, 2, 3])
+# # => [[], [1], [2], [1, 2], [3], [1, 3], [2, 3], [1, 2, 3]]
 
 #[1 2 3 4]
+
+def permutations(array)
+    return [array] if array.length == 1
+    prev_array = permutations(array[0...-1])
+    temp_arr = []
+    prev_array.each do |subset|
+        (0..subset.length).each do |i|
+            temp_arr << subset[0...i] + [array.last] + subset[i...subset.length]
+        end
+    end
+    temp_arr
+end
+
+# p permutations([1])
+# p permutations([1,2]) #=> [1,2] [2,1]
+# p permutations([1, 2, 3]) # => [[1, 2, 3], [1, 3, 2],
+
+def greedy_make_change(target, coins)
+    return [] if coins.empty?
+    return greedy_make_change(target, coins[1..-1]) if coins[0] > target
+    # return [coins[0]] if coins[0] == target
+    [coins[0]] + greedy_make_change(target-coins[0],coins) 
+end
+
+# p greedy_make_change(24, [10,7,1])
+
+def make_better_change(target, coins)
+    return [] if target == 0
+    best_array = nil
+    (0...coins.length).each do |i|
+        next if coins[i] > target
+        current_array = [coins[i]] + make_better_change(target-coins[i], coins) 
+        best_array = current_array if best_array.nil? || current_array.length < best_array.length
+    end
+    best_array
+end
+p make_better_change(24, [10,7,1])
+
